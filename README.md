@@ -11,7 +11,7 @@ If you care about safer pipelines and cleaner CloudOps practices, this is one up
 
 
 ## How GitHub Actions OIDC integrates with AWS to access resources
-![How GitHub Actions OIDC integrates with AWS to access resources](/images/cover.png)
+![How GitHub Actions OIDC integrates with AWS to access resources](/images/archi.gif)
 
 - **Step 1 Extablish trust relatioship:** A trust relationship needs to be established between Github,the  Identity Provider (IdP) and  AWS the OpenID Provider (OP).This relationship will register GitHub as a trusted OIDC provider and will tell AWS where to   fetch GitHub’s public signing keys and which token claims AWS should trust.
 - **Step 2 Authentication Request:** when a workflow runs, github generates a  signed  JSON Web Token (JWT)  token with identity claims that include, repository name, branch or tag , workflow name, commit SHA, gitHub org etc which proves where the job is running at the moment.
@@ -32,17 +32,22 @@ In this step,  you will setup the OpenID Provider which is GitHub to AWS.  We 
    Audience: sts.amazonaws.com
    Add tags :optional
 
+![Create an OIDC provider in your AWS  IAM for GitHub](/images/1.png)
+
+
 ### **Step 2:** Create an IAM role with a trust policy that allows GitHub Actions to assume the role
 1. In the Identity providers screen select the provider you just create and , choose the Assign role button. Seclect Create new role and then choose Next.
 2. Select Web identity and provide these details
-       Identity provider: 
-       Audience: sts.amazonaws.com
-       GitHub organization: provide your github organiazation. 
-if you don't have Github orgization you can (Creating a new organization from scratch)follow https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch to create one.
+      - Identity provider: 
+      - Audience: sts.amazonaws.com
+      - GitHub organization: provide your github organization. 
+if you don't have Github orgization you can use [Creating a new organization from scratch](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch)  to create one.
 
 3. On the Permissions page, search for AmazonS3FullAccess and select it  for this demo and select next to continue
 4.  In the next step enter  a role name, for this demo, enter GitHubAction-AssumeRoleWithAction. You can optionally add a description. Review and click create role. 
-  
+  ![Create an IAM role with a trust policy that allows GitHub Actions to assume the role](/images/2.png)
+
+
 ### **Step 3:** Create a trust policy conditions to restrict access by repository, branch, or environment
 1. In the IAM console,  select the newly created role and choose Trust relationship tab and select edit trust policy.
 ```bash
