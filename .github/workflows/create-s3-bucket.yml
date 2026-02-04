@@ -25,5 +25,5 @@ jobs:
       - name: Create S3 bucket
         run: |
           aws s3api create-bucket \
-            --just-another-new-bucket-124 \
+            --bucket just-another-new-bucket-124 \
             --region us-east-1
