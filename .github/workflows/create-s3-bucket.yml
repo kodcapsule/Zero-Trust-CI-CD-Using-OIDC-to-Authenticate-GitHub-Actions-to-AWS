@@ -1,0 +1,25 @@
+name: Create S3 Bucket with OIDC
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # REQUIRED for OIDC
+  contents: read
+
+jobs:
+  create-bucket:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Create S3 bucket
+        run: |
+          aws s3api create-bucket \
+            --just-another-new-bucket-124 \
+            --region us-east-1
