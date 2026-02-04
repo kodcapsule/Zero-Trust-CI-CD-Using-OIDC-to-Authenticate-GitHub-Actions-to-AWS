@@ -4,8 +4,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write   # REQUIRED for OIDC
+  id-token: write
   contents: read
+  pull-requests: write
+  security-events: write
 
 jobs:
   create-bucket:
@@ -15,7 +17,7 @@ jobs:
       - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          role-to-assume: ${{secrets.AWS_OIDC_ROLE_ARN}}
           aws-region: us-east-1
 
       - name: Create S3 bucket

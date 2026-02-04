@@ -13,9 +13,9 @@ If you care about safer pipelines and cleaner CloudOps practices, this is one up
 
 - **Step 1 Extablish trust relatioship:** A trust relationship needs to be established between Github,the  Identity Provider (IdP) and  AWS the OpenID Provider (OP)  through an OpenID Provider (OP).This relationship will register GitHub as a trusted OIDC provider and will tell AWS where to   fetch GitHub’s public signing keys and which token claims AWS should trust.
 - **Step 2 Authentication Request:** when a workflow runs, github generates a  signed  JSON Web Token (JWT)  token with identity claims that include, repository name, branch or tag , workflow name, commit SHA, gitHub org etc which proves where the job is running at the moment.
-**Step 3 Token Validation:** The Relying Party (RP) , AWS validates the token using the token signature, issuer,audiance and if token claims match IAM trust policy conditions. The checks either fails or succeeds. 
-**Step 4 Issues Short-Lived Credentials:** If the validatons is successfull allows the workflow to asume an IAM role and temporary credentials are issued via STS.The credentials have an authomatic experations period. 
-**Step 5 Workflow Uses AWS Normally:** The workflow then executes/access AWS resources  based on actions that are defined on in the IAM role. After the job is completed the credentials die with it requiring no cleanup. 
+- **Step 3 Token Validation:** The Relying Party (RP) , AWS validates the token using the token signature, issuer,audiance and if token claims match IAM trust policy conditions. The checks either fails or succeeds. 
+- **Step 4 Issues Short-Lived Credentials:** If the validatons is successfull allows the workflow to asume an IAM role and temporary credentials are issued via STS.The credentials have an authomatic experations period. 
+- **Step 5 Workflow Uses AWS Normally:** The workflow then executes/access AWS resources  based on actions that are defined on in the IAM role. After the job is completed the credentials die with it requiring no cleanup. 
 
 
 ## Configuring GitHub Actions OIDC with AWS IAM
