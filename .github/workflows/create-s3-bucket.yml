@@ -14,11 +14,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Configure AWS credentials using OIDC
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
-          role-to-assume: ${{secrets.AWS_OIDC_ROLE_ARN}}
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN}}
+          role-session-name: GitHubAction-AssumeRoleWithAction
           aws-region: us-east-1
+
 
       - name: Create S3 bucket
         run: |
