@@ -11,16 +11,17 @@ If you care about safer pipelines and cleaner CloudOps practices, this is one up
 
 
 ## How GitHub Actions OIDC integrates with AWS to access resources
+![How GitHub Actions OIDC integrates with AWS to access resources](/images/cover.png)
 
 - **Step 1 Extablish trust relatioship:** A trust relationship needs to be established between Github,the  Identity Provider (IdP) and  AWS the OpenID Provider (OP).This relationship will register GitHub as a trusted OIDC provider and will tell AWS where to   fetch GitHub’s public signing keys and which token claims AWS should trust.
 - **Step 2 Authentication Request:** when a workflow runs, github generates a  signed  JSON Web Token (JWT)  token with identity claims that include, repository name, branch or tag , workflow name, commit SHA, gitHub org etc which proves where the job is running at the moment.
 - **Step 3 Token Validation:** The Relying Party (RP) , AWS validates the token using the token signature, issuer,audiance and if token claims match IAM trust policy conditions. The checks either fails or succeeds. 
 - **Step 4 Issues Short-Lived Credentials:** If the validatons is successfull allows the workflow to asume an IAM role and temporary credentials are issued via STS.The credentials have an authomatic experations period. 
-- **Step 5 Workflow Uses AWS Normally:** The workflow then executes/access AWS resources  based on actions that are defined on in the IAM role. After the job is completed the credentials die with it requiring no cleanup. 
+- **Step 5 Workflow Uses AWS:** The workflow then executes/access AWS resources  based on actions that are defined on in the IAM role. After the job is completed the credentials die with it requiring no cleanup. 
 
 
 ## Configuring GitHub Actions OIDC with AWS IAM
-### **Step 1:** Create an OIDC provider in your AWS  IAM for GitHub, pointing to GitHub's token endpoint (https://token.actions.githubusercontent.com)
+### **Step 1:** Create an OIDC provider in your AWS  IAM for GitHub
 
 In this step,  you will setup the OpenID Provider which is GitHub to AWS.  We will be using the AWS console but you can also use AWS CLI too if that is your preference.   
 
@@ -113,3 +114,7 @@ Test the  OIDC Connection  by running the workflow
 ### **Step 7:**   Audit the role usage: Query CloudTrail logs
 
 ## Conclusion
+Building a secure CI/CD pipeline forms a crucial part  of modern software development. Storing Long-lived credentials in CI/CD pipelines are bad security practices that is still been used by some teams. OIDC offers a better alternative of enhancing your workflows using  identity-based and  short-lived credentails. This approach reduce your attack surface and simplifies credentials management. If your pipelines still relies on stored AWS Accesss keys, the question is no longer “Why switch to OIDC?”
+It’s “Why haven’t you switch yet?”. 
+
+I'd like to find out from you on how you manage AWS credentials using Github Actions. Have you tried the OIDC approach? Please let me know in the comments.
