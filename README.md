@@ -1,17 +1,18 @@
 
 # Stop Storing AWS Access Keys in GitHub Secrets — Use OIDC Instead to Authenticate GitHub Actions to AWS
+![Stop Storing AWS Access Keys in GitHub Secrets — Use OIDC Instead](/images/cover.png)
+
 
 ## Introduction
-Let’s all be honest to ourselfs , we have in one way or the other dump AWS access keys into GitHub Secrets or  read somewhere espercially Redit some and used them in our CI/CD pipelines. Well this works but you are you’re carrying unnecessary risk.  Access keys are long-lived and don’t rotate automatically  and once leaked, they’re hard to contain. 
-
-OpenID Connect (OIDC) offers  bettter option of authentication without storing a long-live credentials in GitHub secretes. In this  post i will walk you through how  GitHub OIDC actually works, why is is more secure compared to long-lived crdentials like acess keys and how to integrate AWS with GitHub actions  OIDC with AWS. 
-
+Let’s all be honest to ourselfs , we have in one way or the other dump AWS access keys into GitHub Secrets or we might have read somewhere espercially Redit about someone using dump AWS access keys into GitHub Secrets. Well this works but you are you’re carrying unnecessary risk.  Access keys are long-lived and don’t rotate automatically  and once leaked, they’re hard to contain. 
+ 
+OpenID Connect (OIDC) offers  bettter option of authentication without storing a long-live credentials in GitHub secretes. In this  post i will walk you through how  GitHub OIDC actually works, why is is more secure compared to long-lived crdentials like acess keys and how to integrate AWS with GitHub actions  OIDC with.  
 If you care about safer pipelines and cleaner CloudOps practices, this is one upgrade you don’t want to skip. 
 
 
 ## How GitHub Actions OIDC integrates with AWS to access resources
 
-- **Step 1 Extablish trust relatioship:** A trust relationship needs to be established between Github,the  Identity Provider (IdP) and  AWS the OpenID Provider (OP)  through an OpenID Provider (OP).This relationship will register GitHub as a trusted OIDC provider and will tell AWS where to   fetch GitHub’s public signing keys and which token claims AWS should trust.
+- **Step 1 Extablish trust relatioship:** A trust relationship needs to be established between Github,the  Identity Provider (IdP) and  AWS the OpenID Provider (OP).This relationship will register GitHub as a trusted OIDC provider and will tell AWS where to   fetch GitHub’s public signing keys and which token claims AWS should trust.
 - **Step 2 Authentication Request:** when a workflow runs, github generates a  signed  JSON Web Token (JWT)  token with identity claims that include, repository name, branch or tag , workflow name, commit SHA, gitHub org etc which proves where the job is running at the moment.
 - **Step 3 Token Validation:** The Relying Party (RP) , AWS validates the token using the token signature, issuer,audiance and if token claims match IAM trust policy conditions. The checks either fails or succeeds. 
 - **Step 4 Issues Short-Lived Credentials:** If the validatons is successfull allows the workflow to asume an IAM role and temporary credentials are issued via STS.The credentials have an authomatic experations period. 
@@ -45,27 +46,24 @@ if you don't have Github orgization you can (Creating a new organization from sc
 1. In the IAM console,  select the newly created role and choose Trust relationship tab and select edit trust policy.
 ```bash
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Federated": "arn:aws:iam::<AWS_ACCOUNT>:oidc-provider/token.actions.githubusercontent.com"
-            },
-            "Action": "sts:AssumeRoleWithWebIdentity",
-            "Condition": {
-                "StringEquals": {
-                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
-                },
-                "StringLike": {
-                    "token.actions.githubusercontent.com:sub": [
-                        "repo:<GITHUB_REPO_NAME>/*",
-                        "repo:<GITHUB_REPO_NAME>/*"
-                    ]
-                }
-            }
-        }
-    ]
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Principal": {
+				"Federated": "arn:aws:iam::<AWS_ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
+			},
+			"Action": "sts:AssumeRoleWithWebIdentity",
+			"Condition": {
+				"StringEquals": {
+					"token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+				},
+				"StringLike": {
+					"token.actions.githubusercontent.com:sub": "repo:kodcapsule/*"
+				}
+			}
+		}
+	]
 }
 ```
 save the changes. 
