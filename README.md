@@ -43,9 +43,9 @@ In this step,  you will setup the OpenID Provider which is GitHub to AWS.  We 
       - GitHub organization: provide your github organization. 
 if you don't have Github orgization you can use [Creating a new organization from scratch](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch)  to create one.
 
-3. On the Permissions page, search for AmazonS3FullAccess and select it  for this demo and select next to continue
+3. On the Permissions page, search for `AmazonS3FullAccess` and select it  for this demo and select next to continue
 4.  In the next step enter  a role name, for this demo, enter GitHubAction-AssumeRoleWithAction. You can optionally add a description. Review and click create role. 
-  ![Create an IAM role with a trust policy that allows GitHub Actions to assume the role](/images/2.png)
+  ![Create an IAM role with a trust policy that allows GitHub Actions to assume the role](/images/role-1.png)
 
 
 ### **Step 3:** Create a trust policy conditions to restrict access by repository, branch, or environment
