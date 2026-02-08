@@ -13,11 +13,11 @@ If you care about safer pipelines and cleaner CloudOps practices, this is one up
 ## How GitHub Actions OIDC integrates with AWS to access resources
 ![How GitHub Actions OIDC integrates with AWS to access resources](/images/archi.gif)
 
-- **Step 1 Extablish trust relatioship:** A trust relationship needs to be established between Github,the  Identity Provider (IdP) and  AWS the OpenID Provider (OP).This relationship will register GitHub as a trusted OIDC provider and will tell AWS where to   fetch GitHub’s public signing keys and which token claims AWS should trust.
-- **Step 2 Authentication Request:** when a workflow runs, github generates a  signed  JSON Web Token (JWT)  token with identity claims that include, repository name, branch or tag , workflow name, commit SHA, gitHub org etc which proves where the job is running at the moment.
-- **Step 3 Token Validation:** The Relying Party (RP) , AWS validates the token using the token signature, issuer,audiance and if token claims match IAM trust policy conditions. The checks either fails or succeeds. 
-- **Step 4 Issues Short-Lived Credentials:** If the validatons is successfull allows the workflow to asume an IAM role and temporary credentials are issued via STS.The credentials have an authomatic experations period. 
-- **Step 5 Workflow Uses AWS:** The workflow then executes/access AWS resources  based on actions that are defined on in the IAM role. After the job is completed the credentials die with it requiring no cleanup. 
+  - **Step 1 Extablish trust relatioship:** A trust relationship needs to be established between Github,the  Identity Provider (IdP) and  AWS the OpenID Provider (OP).This relationship will register GitHub as a trusted OIDC provider and will tell AWS where to   fetch GitHub’s public signing keys and which token claims AWS should trust.
+  - **Step 2 Authentication Request:** when a workflow runs, github generates a  signed  JSON Web Token (JWT)  token with identity claims that include, repository name, branch or tag , workflow name, commit SHA, gitHub org etc which proves where the job is running at the moment.
+  - **Step 3 Token Validation:** The Relying Party (RP) , AWS validates the token using the token signature, issuer,audiance and if token claims match IAM trust policy conditions. The checks either fails or succeeds. 
+  - **Step 4 Issues Short-Lived Credentials:** If the validatons is successfull allows the workflow to asume an IAM role and temporary credentials are issued via STS.The credentials have an authomatic experations period. 
+  - **Step 5 Workflow Uses AWS:** The workflow then executes/access AWS resources  based on actions that are defined on in the IAM role. After the job is completed the credentials die with it requiring no cleanup. 
 
 
 ## Configuring GitHub Actions OIDC with AWS IAM
@@ -27,21 +27,21 @@ In this step,  you will setup the OpenID Provider which is GitHub to AWS.  We 
 
 1. Login to AWS and open the IAM console and select   Identity providers in the left navigation menu
 2.  Click  Add provider buttom and in the provider details enter these details
-   - Provider type: OpenID Connect
-   - Provider URL: https://token.actions.githubusercontent.com
-   - Audience: sts.amazonaws.com
-   -  Add tags :optional
+        - Provider type: OpenID Connect
+        - Provider URL: https://token.actions.githubusercontent.com
+        - Audience: sts.amazonaws.com
+        -  Add tags :optional
 
 ![Create an OIDC provider in your AWS  IAM for GitHub](/images/1.png)
 
 
 ### **Step 2:** Create an IAM role 
 1. In the Identity providers screen select the provider you just create and , choose the Assign role button. Seclect Create new role and then choose Next.
-- *Select Identity provider*
+- **Select Identity provider**
 ![Select Identity provider](/images/2.png)
-- *Select Assign role*
+- **Select Assign role**
 ![Select Assign role](/images/4.png)
-- *Seclect Create new role*
+- **Seclect Create new role**
 ![CSeclect Create new role](/images/3.png)
 
 2. Select Web identity and provide these details
@@ -50,9 +50,9 @@ In this step,  you will setup the OpenID Provider which is GitHub to AWS.  We 
       - GitHub organization: provide your github organization. 
 if you don't have Github orgization you can use [Creating a new organization from scratch](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch)  to create one.
 
-- *Seclect Web identity*
+- **Seclect Web identity**
 ![Seclect Web identity](/images/5.png)
-- *Web identity detailes*
+- **Web identity detailes**
 ![Web identity detailes](/images/6.png)
 
 3. On the Permissions page, search for `AmazonS3FullAccess` and select it  for this demo and select next to continue
