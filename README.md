@@ -44,13 +44,14 @@ In this step,  you will setup the OpenID Provider which is GitHub to AWS.  We 
 if you don't have Github orgization you can use [Creating a new organization from scratch](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch)  to create one.
 
 3. On the Permissions page, search for `AmazonS3FullAccess` and select it  for this demo and select next to continue
-4.  In the next step enter  a role name, for this demo, enter `GitHubAction-AssumeRoleWithAction`. You can optionally add a description. Review and click create role. 
+4.  In the next step enter  a role name, for this demo, `GitHubAction-AssumeRoleWithAction`. You can optionally add a description. Review and click create role. 
   ![Create an IAM role with a trust policy that allows GitHub Actions to assume the role](/images/role-1.png)
+  ![Create an IAM role with a trust policy that allows GitHub Actions to assume the role](/images/w.drawio.png)
 
 
 ### **Step 3:** Create a trust policy conditions to restrict access by repository, branch, or environment
-1. In the IAM console,  select the newly created role and choose Trust relationship tab and select edit trust policy. 
-2. Copy and paste this policy in editor and save the changes. 
+1. In the IAM console,  select the newly created role, `GitHubAction-AssumeRoleWithAction`, and choose Trust relationship tab and select edit trust policy. 
+2. Copy and paste this policy in editor and save the changes. Make sure to replace `<AWS_ACCOUNT_ID>` with your AWS account id. 
 ```bash
 {
 	"Version": "2012-10-17",
@@ -58,7 +59,7 @@ if you don't have Github orgization you can use [Creating a new organization fro
 		{
 			"Effect": "Allow",
 			"Principal": {
-				"Federated": "arn:aws:iam::650251710981:oidc-provider/token.actions.githubusercontent.com"
+				"Federated": "arn:aws:iam::<AWS_ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
 			},
 			"Action": "sts:AssumeRoleWithWebIdentity",
 			"Condition": {
@@ -78,12 +79,13 @@ if you don't have Github orgization you can use [Creating a new organization fro
 ### **Step 4:Optional:** You can attach more permissions policies to the IAM role defining what AWS actions are allowed using the  least privilege principle.  
 
 ### **Step 5:**  Add the IAM Role  ARN  to GitHub repository as  secrets
-- 1. In your Github Account create a repo or select and existing repo that you want to us . The repo i am using is  "Zero-Trust CI/CD: Using OIDC to Authenticate GitHub Actions to AWS".
-![Add role ARN as github secrete step 1](/images/10.png)
+- *1.* In your Github Account create a repo or select and existing repo that you want to us . The repo i am using is  "Zero-Trust CI/CD: Using OIDC to Authenticate GitHub Actions to AWS".
 
-- 2. Select the repo settings  and  , in the left menu  select Secretes and variables. Choose Actions in the sub menu and click on  `New repositoy secret` buttom. Add these details
+
+- *2.* Select the repo settings  and  , in the left menu  select Secretes and variables. Choose Actions in the sub menu and click on  `New repositoy secret` buttom. Add these details
 Name: AWS_OIDC_ROLE_ARN
 Secret: arn:aws:iam::<AWS_ACCOUNT_ID>:role/GitHubAction-AssumeRoleWithAction. copy the role ARN and add it as a secrete. Your are now ready to use in in your workflows
+![Add role ARN as github secrete step 1](/images/10.png)
 ![Add role ARN as github secrete step 2](/images/11.png)
 
 ### **Step 6:**  Create a  workflow to use the role ARN and specify the AWS region
@@ -122,8 +124,12 @@ jobs:
             --bucket just-another-new-bucket-124 \
             --region us-east-1
 ```
-Test the  OIDC Connection  by running the workflow
+Test the  OIDC Connection  by running the workflow.
+
+Workflow runned successfully.
 ![Workflow success 1 ](/images/workflow.png)
+
+S3 bucket created 
 ![Workflow success 2 ](/images/bucket%20created.png )
 
 ## Conclusion
