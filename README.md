@@ -44,12 +44,13 @@ In this step,  you will setup the OpenID Provider which is GitHub to AWS.  We 
 if you don't have Github orgization you can use [Creating a new organization from scratch](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch)  to create one.
 
 3. On the Permissions page, search for `AmazonS3FullAccess` and select it  for this demo and select next to continue
-4.  In the next step enter  a role name, for this demo, enter GitHubAction-AssumeRoleWithAction. You can optionally add a description. Review and click create role. 
+4.  In the next step enter  a role name, for this demo, enter `GitHubAction-AssumeRoleWithAction`. You can optionally add a description. Review and click create role. 
   ![Create an IAM role with a trust policy that allows GitHub Actions to assume the role](/images/role-1.png)
 
 
 ### **Step 3:** Create a trust policy conditions to restrict access by repository, branch, or environment
-1. In the IAM console,  select the newly created role and choose Trust relationship tab and select edit trust policy.
+1. In the IAM console,  select the newly created role and choose Trust relationship tab and select edit trust policy. 
+2. Copy and paste this policy in editor and save the changes. 
 ```bash
 {
 	"Version": "2012-10-17",
@@ -57,7 +58,7 @@ if you don't have Github orgization you can use [Creating a new organization fro
 		{
 			"Effect": "Allow",
 			"Principal": {
-				"Federated": "arn:aws:iam::<AWS_ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
+				"Federated": "arn:aws:iam::650251710981:oidc-provider/token.actions.githubusercontent.com"
 			},
 			"Action": "sts:AssumeRoleWithWebIdentity",
 			"Condition": {
@@ -72,21 +73,23 @@ if you don't have Github orgization you can use [Creating a new organization fro
 	]
 }
 ```
-save the changes. 
+
 
 ### **Step 4:Optional:** You can attach more permissions policies to the IAM role defining what AWS actions are allowed using the  least privilege principle.  
 
 ### **Step 5:**  Add the IAM Role  ARN  to GitHub repository as  secrets
-1. In your Github Account reate a repo or select and existing repo that you want to us . The repo i am using is  "Zero-Trust CI/CD: Using OIDC to Authenticate GitHub Actions to AWS".
+- 1. In your Github Account create a repo or select and existing repo that you want to us . The repo i am using is  "Zero-Trust CI/CD: Using OIDC to Authenticate GitHub Actions to AWS".
+![Add role ARN as github secrete step 1](/images/10.png)
 
-2. Select the repo settings  and  in the left menu and  select Secretes and variables. Choose Actions in the sub menu and click on the create new repositoy secret buttom. Add these details
+- 2. Select the repo settings  and  , in the left menu  select Secretes and variables. Choose Actions in the sub menu and click on  `New repositoy secret` buttom. Add these details
 Name: AWS_OIDC_ROLE_ARN
 Secret: arn:aws:iam::<AWS_ACCOUNT_ID>:role/GitHubAction-AssumeRoleWithAction. copy the role ARN and add it as a secrete. Your are now ready to use in in your workflows
+![Add role ARN as github secrete step 2](/images/11.png)
 
 ### **Step 6:**  Create a  workflow to use the role ARN and specify the AWS region
 In this next step, we will   validate the integration of OIDC with AWS. To do this we will create a workflow. Create this workflow 
 
-.github/workflows/create-s3-bucket.yml
+`.github/workflows/create-s3-bucket.yml`
 
 ```bash
 name: Create S3 Bucket with OIDC
@@ -95,28 +98,33 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write   # REQUIRED for OIDC
+  id-token: write
   contents: read
+  pull-requests: write
+  security-events: write
 
 jobs:
   create-bucket:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Configure AWS credentials using OIDC
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
-          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN}}
+          role-session-name: GitHubAction-AssumeRoleWithAction
           aws-region: us-east-1
+
 
       - name: Create S3 bucket
         run: |
           aws s3api create-bucket \
-            --just-another-new-bucket-124 \
+            --bucket just-another-new-bucket-124 \
             --region us-east-1
 ```
 Test the  OIDC Connection  by running the workflow
-### **Step 7:**   Audit the role usage: Query CloudTrail logs
+![Workflow success 1 ](/images/workflow.png)
+![Workflow success 2 ](/images/bucket%20created.png )
 
 ## Conclusion
 Building a secure CI/CD pipeline forms a crucial part  of modern software development. Storing Long-lived credentials in CI/CD pipelines are bad security practices that is still been used by some teams. OIDC offers a better alternative of enhancing your workflows using  identity-based and  short-lived credentails. This approach reduce your attack surface and simplifies credentials management. If your pipelines still relies on stored AWS Accesss keys, the question is no longer “Why switch to OIDC?”
