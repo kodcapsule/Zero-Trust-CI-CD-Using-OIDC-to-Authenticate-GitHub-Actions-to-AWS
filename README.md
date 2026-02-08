@@ -56,8 +56,13 @@ if you don't have Github orgization you can use [Creating a new organization fro
 ![Web identity detailes](/images/6.png)
 
 3. On the Permissions page, search for `AmazonS3FullAccess` and select it  for this demo and select next to continue
-4.  In the next step enter  a role name, for this demo, `GitHubAction-AssumeRoleWithAction`. You can optionally add a description. Review and click create role.  
-  ![Create an IAM role with a trust policy that allows GitHub Actions to assume the role](/images/w.drawio.png)
+
+- **S3 Permissions**
+![S3 Permissions](/images/7.png)
+
+4.  In the next step enter  a role name, for this demo, `GitHubAction-AssumeRoleWithAction`. You can optionally add a description. Review and click create role. 
+- **Review and create role** 
+  ![Review and create role](/images/8.png)
 
 
 ### **Step 3:** Create a trust policy conditions to restrict access by repository, branch, or environment
@@ -87,7 +92,8 @@ if you don't have Github orgization you can use [Creating a new organization fro
 ```
 
 
-### **Step 4:Optional:** You can attach more permissions policies to the IAM role defining what AWS actions are allowed using the  least privilege principle.  
+### **Step 4:Optional:** 
+You can attach more permissions policies, either AWS polices or custom policies, (use least privilege principle) to the IAM role defining what AWS actions are allowed when using the role.  
 
 ### **Step 5:**  Add the IAM Role  ARN  to GitHub repository as  secrets
 - **1.** In your Github Account create a repo or select and existing repo that you want to us . The repo i am using is  "Zero-Trust CI/CD: Using OIDC to Authenticate GitHub Actions to AWS".
