@@ -67,7 +67,7 @@ if you don't have Github orgization you can use [Creating a new organization fro
 
 ### **Step 3:** Create a trust policy conditions to restrict access by repository, branch, or environment
 1. In the IAM console,  select the newly created role, `GitHubAction-AssumeRoleWithAction`, and choose Trust relationship tab and select edit trust policy. 
-2. Copy and paste this policy in editor and save the changes. Make sure to replace `<AWS_ACCOUNT_ID>` with your AWS account id. 
+2. Copy and paste this policy in editor and save the changes. Make sure to replace `<AWS_ACCOUNT_ID>` with your AWS account id, `<GITHUB_USER_NAME>` with your github username and `<REPO_NAME>` with your repo name
 ```bash
 {
 	"Version": "2012-10-17",
@@ -83,7 +83,7 @@ if you don't have Github orgization you can use [Creating a new organization fro
 					"token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
 				},
 				"StringLike": {
-					"token.actions.githubusercontent.com:sub": "repo:kodcapsule/*"
+					"token.actions.githubusercontent.com:sub": "repo:<GITHUB_USER_NAME>/<REPO_NAME>"
 				}
 			}
 		}
@@ -100,8 +100,9 @@ You can attach more permissions policies, either AWS polices or custom policies,
 
 
 - **2.** Select the repo settings  and  , in the left menu  select Secretes and variables. Choose Actions in the sub menu and click on  `New repositoy secret` buttom. Add these details
-Name: AWS_OIDC_ROLE_ARN
-Secret: arn:aws:iam::<AWS_ACCOUNT_ID>:role/GitHubAction-AssumeRoleWithAction. copy the role ARN and add it as a secrete. Your are now ready to use in in your workflows
+    - Name: AWS_OIDC_ROLE_ARN
+    - Secret: arn:aws:iam::<AWS_ACCOUNT_ID>:role/<ROLE_NAME>. 
+  *NOTE* copy the role ARN and add it as a secrete. Your are now ready to use in in your workflows
 ![Add role ARN as github secrete step 1](/images/10.png)
 ![Add role ARN as github secrete step 2](/images/11.png)
 
