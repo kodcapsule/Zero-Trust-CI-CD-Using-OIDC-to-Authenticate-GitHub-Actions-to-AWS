@@ -37,18 +37,23 @@ In this step,  you will setup the OpenID Provider which is GitHub to AWS.  We 
 
 ### **Step 2:** Create an IAM role 
 1. In the Identity providers screen select the provider you just create and , choose the Assign role button. Seclect Create new role and then choose Next.
-*Select Identity provider*
+- *Select Identity provider*
 ![Select Identity provider](/images/2.png)
-*Select Assign role*
+- *Select Assign role*
 ![Select Assign role](/images/4.png)
-*Seclect Create new role*
-![Create new role](/images/3.png)
+- *Seclect Create new role*
+![CSeclect Create new role](/images/3.png)
 
 2. Select Web identity and provide these details
-      - Identity provider: 
+      - Identity provider: token.actions.githubusercontent.com
       - Audience: sts.amazonaws.com
       - GitHub organization: provide your github organization. 
 if you don't have Github orgization you can use [Creating a new organization from scratch](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch)  to create one.
+
+- *Seclect Web identity*
+![Seclect Web identity](/images/5.png)
+- *Web identity detailes*
+![Web identity detailes](/images/6.png)
 
 3. On the Permissions page, search for `AmazonS3FullAccess` and select it  for this demo and select next to continue
 4.  In the next step enter  a role name, for this demo, `GitHubAction-AssumeRoleWithAction`. You can optionally add a description. Review and click create role.  
